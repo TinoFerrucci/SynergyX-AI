@@ -600,8 +600,8 @@ CERTIFICATIONS
 ]
 
 
-def seed(url: str):
-    for cv in SEED_CVS:
+def seed(url: str, count: int):
+    for cv in SEED_CVS[:count]:
         content_bytes = cv["content"].encode("utf-8")
         files = {"file": (cv["filename"], content_bytes, "text/plain")}
         try:
@@ -622,12 +622,17 @@ def main():
     parser.add_argument(
         "--url", default="http://localhost:8000/api", help="API base URL"
     )
+    parser.add_argument(
+        "--count", type=int, default=len(SEED_CVS),
+        help=f"Number of profiles to seed (max {len(SEED_CVS)})"
+    )
     args = parser.parse_args()
 
+    count = max(0, min(args.count, len(SEED_CVS)))
     print(f"Seeding CVs to {args.url}...")
-    print(f"Preparing {len(SEED_CVS)} mock profiles...\n")
-    seed(args.url)
-    print(f"\nDone! {len(SEED_CVS)} profiles processed.")
+    print(f"Preparing {count} mock profiles...\n")
+    seed(args.url, count)
+    print(f"\nDone! {count} profiles processed.")
 
 
 if __name__ == "__main__":
